@@ -1,16 +1,15 @@
 ﻿using System.Text;
-using TaskTracker;
 
-class Program
+namespace TaskTracker;
+
+internal static class Program
 {
-    private static readonly TaskService _taskService = new TaskService();
-
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
         if (args.Length == 0)
         {
             Console.WriteLine(
-                "Hello, you can use task tracker through 'task-cli' command. And try 'help' command for information.");
+                "Hello, you can use task tracker through 'task-cli' command. And try 'help' command for more information.");
             return;
         }
 
@@ -42,15 +41,15 @@ class Program
     private static void Help(string[] args)
     {
         var help = new StringBuilder();
-        help.AppendLine("Comandos disponibles:");
-        help.AppendLine("  help                - Muestra esta ayuda.");
-        help.AppendLine("  add <descripcion>   - Agrega una nueva tarea con la descripción proporcionada.");
-        help.AppendLine("  update <id> <desc>  - Actualiza la descripción de una tarea existente.");
-        help.AppendLine("  delete <id>         - Elimina una tarea por su ID.");
-        help.AppendLine("  mark-in-progress <id> - Marca una tarea como 'in-progress' por su ID.");
-        help.AppendLine("  mark-done <id>      - Marca una tarea como 'done' por su ID.");
+        help.AppendLine("Available commands:");
+        help.AppendLine("  help                - Shows this help.");
+        help.AppendLine("  add <descripcion>   - Adds a new task with the given description.");
+        help.AppendLine("  update <id> <desc>  - Updates description of an existing task. ");
+        help.AppendLine("  delete <id>         - Deletes a task with the given id.");
+        help.AppendLine("  mark-in-progress <id> - Marks a task as 'in-progress' by its ID.");
+        help.AppendLine("  mark-done <id>      - Marks a task as 'done' by its ID.");
         help.AppendLine(
-            "  list [status]       - Lista todas las tareas o filtra por estado ('todo', 'in-progress', 'done').");
+            "  list [status]       - Lists all tasks or filter by status ('todo', 'in-progress', 'done').");
         Console.WriteLine(help.ToString());
     }
 
@@ -58,18 +57,18 @@ class Program
     {
         if (args.Length < 2)
         {
-            _taskService.ListAllTasks();
+            TaskService.ListAllTasks();
             return;
         }
 
         string status = args[1].ToLower();
         if (status is "done" or "todo" or "in-progress")
         {
-            _taskService.ListTasksByStatus(status);
+            TaskService.ListTasksByStatus(status);
         }
         else
         {
-            Console.WriteLine("Uso: task-cli <done || todo || in-progress>");
+            Console.WriteLine("Use: task-cli <done || todo || in-progress>");
         }
     }
 
@@ -77,82 +76,82 @@ class Program
     {
         if (args.Length < 2)
         {
-            Console.WriteLine("Uso: task-cli mark-done <taskId>");
+            Console.WriteLine("Use: task-cli mark-done <taskId>");
             return;
         }
 
         if (!int.TryParse(args[1], out var taskId))
         {
-            Console.WriteLine("Error: ID de tarea invalido.");
+            Console.WriteLine("Error: Invalid task ID.");
             return;
         }
 
-        _taskService.UpdateStatus(taskId, "done");
+        TaskService.UpdateStatus(taskId, "done");
     }
 
     private static void MarkInProgress(string[] args)
     {
         if (args.Length < 2)
         {
-            Console.WriteLine("Uso: task-cli mark-in-progress <taskId>");
+            Console.WriteLine("Use: task-cli mark-in-progress <taskId>");
             return;
         }
 
         if (!int.TryParse(args[1], out var taskId))
         {
-            Console.WriteLine("Error: ID de tarea invalido.");
+            Console.WriteLine("Error: Invalid task ID.");
             return;
         }
 
-        _taskService.UpdateStatus(taskId, "in-progress");
+        TaskService.UpdateStatus(taskId, "in-progress");
     }
 
     private static void DeleteTask(string[] args)
     {
         if (args.Length < 2)
         {
-            Console.WriteLine("Uso: task-cli delete <taskId>");
+            Console.WriteLine("Use: task-cli delete <taskId>");
             return;
         }
 
         if (!int.TryParse(args[1], out var taskId))
         {
-            Console.WriteLine("Error: ID de tarea invalido.");
+            Console.WriteLine("Error: Invalid task ID.");
             return;
         }
 
-        _taskService.DeleteTask(taskId);
+        TaskService.DeleteTask(taskId);
     }
 
     private static void UpdateTask(string[] args)
     {
         if (args.Length < 3)
         {
-            Console.WriteLine("Uso: task-cli update <taskId> \"nueva descripcion\"");
+            Console.WriteLine("Use: task-cli update <taskId> \"new description\"");
             return;
         }
 
         if (!int.TryParse(args[1], out int taskId))
         {
-            Console.WriteLine("Error: ID de tarea inválido.");
+            Console.WriteLine("Error: Invalid task ID.");
             return;
         }
 
         string newDescription = string.Join(" ", args[2..]);
 
-        _taskService.UpdateTask(taskId, newDescription);
+        TaskService.UpdateTask(taskId, newDescription);
     }
 
     private static void AddTask(string[] args)
     {
         if (args.Length < 2)
         {
-            Console.WriteLine("Uso: task-cli add \"nombre de la tarea\"");
+            Console.WriteLine("Use: task-cli add \"task description\"");
             return;
         }
 
         string taskDescription = string.Join(" ", args[1..]);
 
-        _taskService.AddTask(taskDescription);
+        TaskService.AddTask(taskDescription);
     }
 }

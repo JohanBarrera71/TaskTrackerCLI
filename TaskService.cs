@@ -2,146 +2,93 @@ using System.Text.Json;
 
 namespace TaskTracker;
 
-public class TaskService
+public static class TaskService
 {
-    private readonly String _filePath = "tasks.json";
-    public Task AddTask(string description)
+    private const string FilePath = "tasks.json";
+
+    private static List<TaskEntity> LoadTasks()
     {
-        var task = new TaskEntity
-        {
-            Description = description
-        };
-        
-        List<TaskEntity> tasks;
-
-        if (File.Exists(_filePath))
-        {
-            var json = File.ReadAllText(_filePath);
-            tasks = JsonSerializer.Deserialize<List<TaskEntity>>(json) ?? new List<TaskEntity>();
-        }
-        else
-        {
-            tasks = new List<TaskEntity>();
-        }
-        
-        tasks.Add(task);
-
-        var updateJson = JsonSerializer.Serialize(tasks, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(_filePath, updateJson);
-        Console.WriteLine($"Tarea agregada: {task.Description}");
-        return Task.CompletedTask;
+        if (!File.Exists(FilePath)) return new List<TaskEntity>();
+        var json = File.ReadAllText(FilePath);
+        return JsonSerializer.Deserialize<List<TaskEntity>>(json) ?? new List<TaskEntity>();
     }
 
-    public Task UpdateTask(int id, string description)
+    private static void SaveTasks(List<TaskEntity> tasks)
     {
-        if (!File.Exists(_filePath))
-        {
-            Console.WriteLine("No hay tareas para actualizar");
-            return Task.CompletedTask;
-        }
+        var json = JsonSerializer.Serialize(tasks, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(FilePath, json);
+    }
 
-        var json = File.ReadAllText(_filePath);
-        var tasks = JsonSerializer.Deserialize<List<TaskEntity>>(json) ?? new List<TaskEntity>();
+    public static void AddTask(string description)
+    {
+        var tasks = LoadTasks();
+        tasks.Add(new TaskEntity { Description = description });
+        SaveTasks(tasks);
+        Console.WriteLine($"Task added: {description}");
+    }
 
+    public static void UpdateTask(int id, string description)
+    {
+        var tasks = LoadTasks();
         var task = tasks.FirstOrDefault(e => e.Id == id);
-        if(task is null) 
+        if (task == null)
         {
-            Console.WriteLine($"No se encontró la tarea con ID {id}");
-            return Task.CompletedTask;
+            Console.WriteLine($"No task found with ID {id}");
+            return;
         }
-        
+
         task.Description = description;
         task.UpdatedAt = DateTime.Now;
-        
-
-        var updateJson = JsonSerializer.Serialize(tasks, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(_filePath, updateJson);
-
-        Console.WriteLine($"Tarea {task.Id} actualizada a: {task.Description}");
-        return Task.CompletedTask;
+        SaveTasks(tasks);
+        Console.WriteLine($"Task {id} updated to: {description}");
     }
 
-    public Task DeleteTask(int id)
+    public static void DeleteTask(int id)
     {
-        if (!File.Exists(_filePath))
-        {
-            Console.WriteLine("No hay tareas para eliminar.");
-            return Task.CompletedTask;
-        }
-
-        var json = File.ReadAllText(_filePath);
-        var tasks = JsonSerializer.Deserialize<List<TaskEntity>>(json) ?? [];
-
+        var tasks = LoadTasks();
         var task = tasks.FirstOrDefault(e => e.Id == id);
-        if (task is null)
+        if (task == null)
         {
-            Console.WriteLine($"No se encontro la tarea con ID {id}");
-            return Task.CompletedTask;
+            Console.WriteLine($"No task found with ID {id}");
+            return;
         }
 
         tasks.Remove(task);
-        
-        var updateJson = JsonSerializer.Serialize(tasks, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(_filePath, updateJson);
-        
-        
-        Console.WriteLine($"Tarea {task.Id} eliminada.");
-        return Task.CompletedTask;
+        SaveTasks(tasks);
+        Console.WriteLine($"Task {id} deleted.");
     }
 
-    public Task UpdateStatus(int id, string status)
+    public static void UpdateStatus(int id, string status)
     {
-        if (!File.Exists(_filePath))
+        var tasks = LoadTasks();
+        var task = tasks.FirstOrDefault(e => e.Id == id);
+        if (task == null)
         {
-            Console.WriteLine("No hay tareas para actualizar.");
-            return Task.CompletedTask;
-        }
-
-        var json = File.ReadAllText(_filePath);
-        var tasks = JsonSerializer.Deserialize<List<TaskEntity>>(json) ?? [];
-
-        var task = tasks.FirstOrDefault(x => x.Id == id);
-        if (task is null)
-        {
-            Console.WriteLine($"No se encontro la taarea con ID {id}");
-            return Task.CompletedTask;
+            Console.WriteLine($"No task found with ID {id}");
+            return;
         }
 
         task.Status = status;
         task.UpdatedAt = DateTime.Now;
-        
-        var updateJson = JsonSerializer.Serialize(tasks, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(_filePath, updateJson);
-        Console.WriteLine($"Tarea {task.Id} marcada como  {task.Status}");
-        return Task.CompletedTask;
+        SaveTasks(tasks);
+        Console.WriteLine($"Task {id} marked as {status}");
     }
 
-    public Task ListAllTasks()
+    public static void ListAllTasks()
     {
-        if (!File.Exists(_filePath))
+        if (!File.Exists(FilePath))
         {
-            Console.WriteLine("No hay tareas para mostrar.");
-            return Task.CompletedTask;
+            Console.WriteLine("No tasks found.");
+            return;
         }
-        
-        // List all tasks
-        var json = File.ReadAllText(_filePath);
-        Console.WriteLine(json);
-        return Task.CompletedTask;
+
+        Console.WriteLine(File.ReadAllText(FilePath));
     }
 
-    public Task ListTasksByStatus(string status)
+    public static void ListTasksByStatus(string status)
     {
-        if (!File.Exists(_filePath))
-        {
-            Console.WriteLine("No hay tareas para mostrar.");
-            return Task.CompletedTask;
-        }
-        var json = File.ReadAllText(_filePath);
-        var tasks = JsonSerializer.Deserialize<List<TaskEntity>>(json) ?? [];
-
-        var query = tasks.Where(x => x.Status == status);
-        Console.WriteLine(JsonSerializer.Serialize(query, new JsonSerializerOptions { WriteIndented = true }));
-        return Task.CompletedTask;
+        var tasks = LoadTasks();
+        var filteredTasks = tasks.Where(x => x.Status == status);
+        Console.WriteLine(JsonSerializer.Serialize(filteredTasks, new JsonSerializerOptions { WriteIndented = true }));
     }
 }
