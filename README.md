@@ -18,16 +18,16 @@ TaskTrackerCLI is a command-line interface (CLI) application for managing tasks.
 ## Installation
 
 1. Clone the repository:
--  ```bash
+    ```bash
    git clone https://github.com/JohanBarrera71/TaskTrackerCLI.git
    cd TaskTrackerCLI
     ```
 2. Build the project:
-- ```bash
+    ```bash
    dotnet build
    ```
 3. Run the application:
- -  ```bash
+    ```bash
     dotnet run <command>
     ```
 
@@ -35,53 +35,53 @@ TaskTrackerCLI is a command-line interface (CLI) application for managing tasks.
 ### Commands
 
 - `help`: Displays a list of available commands and their descriptions.
-- ```bash 
+    ```bash 
     dotnet run help
     ```
 <br>
 
 - `add <description>`: Add a new task with the given description.
-- ```bash 
+    ```bash 
     dotnet run add "Task description"
     ```
 <br>
 
 - `update <id> <description>`: Update the task with the given ID and new description.
-- ```bash 
+    ```bash 
     dotnet run update 1 "Updated task description"
     ```
   
 <br>
 
 - `delete <id>`: Delete the task with the given ID.
-- ```bash 
+    ```bash 
     dotnet run delete 1
     ```
   
 <br>
 
 - `mark-in-progress <id>`: Mark the task with the given ID as "in-progress."
-- ```bash 
+    ```bash 
     dotnet run mark-in-progress 1
     ```
   
 <br>
 
 - `mark-done <id>`: Mark the task with the given ID as "done."
-- ```bash 
+    ```bash 
     dotnet run mark-done 1
     ```
   
 <br>
 
 - `list`: List all tasks with their IDs, descriptions, and statuses.
-- ```bash 
+    ```bash 
     dotnet run list
     ```
   
 <br>
 
 - `list <status>`: List tasks filtered by status (`todo`, `in-progress`, `done`).
-- ```bash 
+    ```bash 
     dotnet run list in-progress
     ```
