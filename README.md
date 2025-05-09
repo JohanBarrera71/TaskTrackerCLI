@@ -12,7 +12,7 @@ TaskTrackerCLI is a command-line interface (CLI) application for managing tasks.
 
 ## Requirements
 
-- .NET 6.0 or later
+- .NET 9
 - A terminal or command prompt
 
 ## Installation
